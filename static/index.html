@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Socket.IO chat</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font: 13px Helvetica, Arial;
+            }
+            form {
+                background: #000;
+                padding: 3px;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+            }
+            form input {
+                border: 0;
+                padding: 10px;
+                width: 90%;
+                margin-right: 0.5%;
+            }
+            form button {
+                width: 9%;
+                background: rgb(130, 224, 255);
+                border: none;
+                padding: 10px;
+            }
+            #messages {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+            #messages li {
+                padding: 5px 10px;
+            }
+            #messages li:nth-child(odd) {
+                background: #eee;
+            }
+        </style>
+    </head>
+    <body>
+        <h4>Your client Id</h4>
+        <ul id="user"></ul>
+        <h4>list of client Id</h4>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+            >Dropdown Example</a
+        >
+        <ul id="userList"></ul>
+        <ul id="messages"></ul>
+        <form action="">
+            <input id="i" autocomplete="off" />
+            <input id="m" autocomplete="off" /><button>Send</button>
+        </form>
+        <script src="/socket.io.js"></script>
+        <script src="/jquery.js"></script>
+        <script>
+            var socket = io();
+            // socket.emit('msg', 'hello');
+            var s2 = io("/chat");
+            socket.on("userId", function(user) {
+                console.log(user);
+                $("#user").empty();
+                $("#user").append($("<li>").text(user.client_id));
+            });
+            socket.on("userIdList", function(users) {
+                console.log(users);
+                $("#userList").empty();
+                users.map(d =>
+                    $("#userList").append($("<li>").text(d.client_id))
+                );
+            });
+            socket.on("reply", function(users) {
+                $("#messages").append($("<li>").text(users));
+            });
+            $("form").submit(function() {
+                s2.emit("msg", $("#m").val(), function(data) {
+                    $("#messages").append(
+                        $("<li>").text("ACK CALLBACK: " + data)
+                    );
+                });
+                socket.emit("notice", $("#i").val(), $("#m").val());
+                $("#m").val("");
+                return false;
+            });
+        </script>
+    </body>
+</html>
