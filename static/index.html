@@ -47,13 +47,10 @@
         <h4>Your client Id</h4>
         <ul id="user"></ul>
         <h4>list of client Id</h4>
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-            >Dropdown Example</a
-        >
         <ul id="userList"></ul>
         <ul id="messages"></ul>
         <form action="">
-            <input id="i" autocomplete="off" />
+            <!-- <input id="i" autocomplete="off" /> -->
             <input id="m" autocomplete="off" /><button>Send</button>
         </form>
         <script src="/socket.io.js"></script>
@@ -74,8 +71,8 @@
                     $("#userList").append($("<li>").text(d.client_id))
                 );
             });
-            socket.on("reply", function(users) {
-                $("#messages").append($("<li>").text(users));
+            socket.on("reply", function(data) {
+                $("#messages").append($("<li>").text(data));
             });
             $("form").submit(function() {
                 s2.emit("msg", $("#m").val(), function(data) {
@@ -83,7 +80,7 @@
                         $("<li>").text("ACK CALLBACK: " + data)
                     );
                 });
-                socket.emit("notice", $("#i").val(), $("#m").val());
+                socket.emit("notice", $("#m").val());
                 $("#m").val("");
                 return false;
             });

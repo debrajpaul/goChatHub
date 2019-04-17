@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	socketio "github.com/googollee/go-socket.io"
 )
@@ -51,11 +50,11 @@ func main() {
 		s.Emit("userIdList", filterClient)
 		return nil
 	})
-	server.OnEvent("/", "notice", func(s socketio.Conn, listOfUser string, msg string) {
+	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
 		fmt.Println("notice:", msg)
-		//s.Emit("reply", "have "+msg)
-		users := strings.Fields(listOfUser)
-		s.BroadcastTo(users, "some:event", msg)
+		s.Emit("reply", "have--> "+msg)
+		// users := strings.Fields(listOfUser)
+		//s.BroadcastTo("users", "reply", msg)
 	})
 	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
 		s.SetContext(msg)
